@@ -45,8 +45,16 @@ namespace ZensRestaurant.Controllers
         [HttpPost("/api/v1/users/register")]
         public async Task<IActionResult> RegisterAsync([FromBody] UserRegisterRequest userRegisterRequest)
         {
-            await this._userService.RegisterAnAccount(userRegisterRequest);
-            return Ok();
+            try
+            {
+                await this._userService.RegisterAnAccount(userRegisterRequest);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
         }
         #endregion
 

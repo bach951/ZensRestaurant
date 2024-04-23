@@ -38,9 +38,10 @@ namespace Repository.DBContext
             #region User
             modelBuilder.Entity<User>(user =>
             {
+                user.Property(prop => prop.UserName).IsUnicode(false).HasMaxLength(100).IsRequired(true);
                 user.Property(prop => prop.Email).IsUnicode(false).HasMaxLength(100).IsRequired(true);
                 user.Property(prop => prop.Password).IsUnicode(false).HasMaxLength(50).IsRequired(true);
-                user.Property(prop => prop.Address).IsUnicode(false).HasMaxLength(200).IsRequired(true);
+                user.Property(prop => prop.Address).IsUnicode(false).HasMaxLength(200).IsRequired(false);
                 user.Property(prop => prop.Status).IsRequired(true);
                 user.Property(prop => prop.DOB).HasColumnType("datetime2").IsRequired(true);
                 user.Property(prop => prop.Gender).IsUnicode(false).IsRequired(true);

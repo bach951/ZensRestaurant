@@ -2,6 +2,7 @@
 using Repository.Models;
 using Service.DTOs.Users;
 using Service.Services.Interfaces;
+using Service.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace Service.Services.Implementations
             try
             {
                 var user = await _unitOfWork.UserRepository.GetUserByIdAsync(id);
-                if(user == null)
+                if (user == null)
                 {
                     throw new Exception("Id doesn't exist in the system");
                 }
@@ -64,14 +65,19 @@ namespace Service.Services.Implementations
         {
             try
             {
+                // change normal password to md5 hash
+                string md5Password = "";
+                if (userRegisterRequest != null && userRegisterRequest.Password != null)
+                {
+                    md5Password = StringToMD5.GetMD5Hash(userRegisterRequest.Password);
+                }
                 User user = new User
                 {
-                    Address = userRegisterRequest.Address,
-                    Avatar = "",
-                    DOB = userRegisterRequest.DOB,
+                    UserName = userRegisterRequest.UserName,
+                    DOB = DateTime.Now.Date,
                     Email = userRegisterRequest.Email,
-                    Gender = userRegisterRequest.Gender,
-                    Password = userRegisterRequest.Password,
+                    Gender = true,
+                    Password = md5Password,
                     Role = "Customer",
                     Status = 1
                 };
