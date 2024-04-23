@@ -24,11 +24,12 @@
 
   <ItemGroup>
     <Folder Include="Constants\" />
-    <Folder Include="DTOs\" />
     <Folder Include="Utils\" />
     <Folder Include="Profiles\" />
-    <Folder Include="Services\Implementations\" />
-    <Folder Include="Services\Interfaces\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Repository\Repository.csproj" />
   </ItemGroup>
 
 </Project>
