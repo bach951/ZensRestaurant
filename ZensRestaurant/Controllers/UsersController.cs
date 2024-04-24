@@ -1,10 +1,14 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using FluentValidation;
+using FluentValidation.Results;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Service.DTOs.Accounts;
 using Service.DTOs.JWTs;
 using Service.DTOs.Users;
 using Service.Services.Interfaces;
+using System.Security.Claims;
+using ZensRestaurant.Authorization;
 
 namespace ZensRestaurant.Controllers
 {
@@ -12,9 +16,11 @@ namespace ZensRestaurant.Controllers
     public class UsersController : ControllerBase
     {
         private IUserService _userService;
-        public UsersController(IUserService userService)
+        private IValidator<UserRegisterRequest> _userRegisterValidator;
+        public UsersController(IUserService userService, IValidator<UserRegisterRequest> userRegisterValidator)
         {
             _userService = userService;
+            _userRegisterValidator = userRegisterValidator;
         }
         #region Register API
         /// <summary>
@@ -77,11 +83,14 @@ namespace ZensRestaurant.Controllers
         [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [HttpGet("/api/v1/user/{id}")]
+        [PermissionAuthorize("Customer")]
         public async Task<IActionResult> GetUserInformationAsync([FromRoute] int id)
         {
             try
             {
-                var userInfor = await this._userService.GetUserInformation(id);
+                IEnumerable<Claim> claims = Request.HttpContext.User.Claims;
+                var userInfor = await this._userService.GetUserInformation(id, claims);
+                
                 return Ok(userInfor);
             }
             catch (Exception ex)

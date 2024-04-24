@@ -1,9 +1,13 @@
+using FluentValidation;
 using Repository.DBContext;
 using Repository.Infrastructures;
 using Service.DTOs.JWTs;
+using Service.DTOs.Users;
 using Service.Services.Implementations;
 using Service.Services.Interfaces;
+using System.Reflection;
 using ZensRestaurant;
+using ZensRestaurant.Validators.Users;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +26,7 @@ builder.Services.Configure<JWTAuth>(builder.Configuration.GetSection("JWTAuth"))
 builder.Services.AddSingleton<ZRDbContext>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddConfigSwagger();
+builder.Services.AddScoped<IValidator<UserRegisterRequest>, UserValidator>();
 //JWT
 builder.AddJwtValidation();
 
@@ -37,6 +42,7 @@ app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

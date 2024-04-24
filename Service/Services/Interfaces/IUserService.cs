@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,6 +11,6 @@ namespace Service.Services.Interfaces
     public interface IUserService
     {
         public Task RegisterAnAccount(UserRegisterRequest userRegisterRequest);
-        public Task<UserResponse> GetUserInformation(int id);
+        public Task<UserResponse> GetUserInformation(int id, IEnumerable<Claim> claims);
     }
 }

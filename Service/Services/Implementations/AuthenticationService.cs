@@ -3,6 +3,7 @@ using Repository.Infrastructures;
 using Repository.Models;
 using Service.DTOs.Accounts;
 using Service.DTOs.JWTs;
+using Service.DTOs.Users;
 using Service.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Service.Services.Implementations
@@ -29,6 +31,14 @@ namespace Service.Services.Implementations
         {
             try
             {
+                string patternGmail = @"@gmail\.com$";
+
+
+                if (!Regex.IsMatch(accountRequest.Email, patternGmail))
+                {
+                    throw new Exception("Email need end with @gmail.com");
+                }
+                
                 User user = await this._unitOfWork.UserRepository.GetAccountAsync(accountRequest.Email);
                 if (user == null)
                 {
