@@ -20,39 +20,37 @@ namespace ZensRestaurant.Controllers
         /// <summary>
         /// Register new account for user
         /// </summary>
-        /// <param name="account">
-        /// Account object contains Email property and Password property. 
-        /// Notice that the password must be hashed with MD5 algorithm before sending to Login API.
+        /// <param name="userRegisterRequest">
+        /// userRegisterRequest object contains username, email, password properties. 
         /// </param>
         /// <returns>
-        /// An Object with a json format that contains Account Id, Email, Role name, and a pair token (access token, refresh token).
+        /// Message "Register sucessfully".
         /// </returns>
         /// <remarks>
         ///     Sample request:
         ///
         ///         POST 
         ///         {
-        ///             "email": "abc@gmail.com"
-        ///             "password": "********"
+        ///             "userName": "Le Xuan Bach"
+        ///             "email": "lexuanbach952001@gmail.com"
+        ///             "password": "68687979"
         ///         }
         /// </remarks>
-        /// <response code="200">Login Successfully.</response>
+        /// <response code="200">Register Successfully.</response>
         /// <response code="400">Some Error about request data and logic data.</response>
-        /// <response code="404">Some Error about request data not found.</response>
-        /// <response code="500">Some Error about the system.</response>
-        [ProducesResponseType(typeof(AccountResponse), StatusCodes.Status200OK)]
-
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [HttpPost("/api/v1/users/register")]
         public async Task<IActionResult> RegisterAsync([FromBody] UserRegisterRequest userRegisterRequest)
         {
             try
             {
                 await this._userService.RegisterAnAccount(userRegisterRequest);
-                return Ok();
+                return Ok(new { Message = "Register sucessfully" });
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { Message = ex.Message });
             }
 
         }
@@ -63,27 +61,21 @@ namespace ZensRestaurant.Controllers
         /// Get User Information
         /// </summary>
         /// <param name="id">
-        /// Account object contains Email property and Password property. 
-        /// Notice that the password must be hashed with MD5 algorithm before sending to Login API.
+        /// id of user.
         /// </param>
         /// <returns>
-        /// An Object with a json format that contains Account Id, Email, Role name, and a pair token (access token, refresh token).
+        /// An Object with a json format that contains Id, Email, Status, Address, Gender, Role, DOB, Avatar.
         /// </returns>
         /// <remarks>
         ///     Sample request:
         ///
         ///         POST 
-        ///         {
-        ///             "email": "abc@gmail.com"
-        ///             "password": "********"
-        ///         }
+        ///         id: 3
         /// </remarks>
         /// <response code="200">Login Successfully.</response>
         /// <response code="400">Some Error about request data and logic data.</response>
-        /// <response code="404">Some Error about request data not found.</response>
-        /// <response code="500">Some Error about the system.</response>
         [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
-
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [HttpGet("/api/v1/user/{id}")]
         public async Task<IActionResult> GetUserInformationAsync([FromRoute] int id)
         {
@@ -94,7 +86,7 @@ namespace ZensRestaurant.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { Message = ex.Message });
             }
 
         }

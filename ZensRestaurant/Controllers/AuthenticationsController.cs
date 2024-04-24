@@ -41,10 +41,7 @@ namespace ZensRestaurant.Controllers
         /// </remarks>
         /// <response code="200">Login Successfully.</response>
         /// <response code="400">Some Error about request data and logic data.</response>
-        /// <response code="404">Some Error about request data not found.</response>
-        /// <response code="500">Some Error about the system.</response>
         [ProducesResponseType(typeof(AccountResponse), StatusCodes.Status200OK)]
-
         [HttpPost("/api/v1/authentications/login")]
         public async Task<IActionResult> PostLoginAsync([FromBody] AccountRequest account)
         {
@@ -55,7 +52,7 @@ namespace ZensRestaurant.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { Message = ex.Message });
             }
 
         }
