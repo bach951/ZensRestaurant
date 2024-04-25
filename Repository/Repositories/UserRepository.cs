@@ -22,7 +22,8 @@ namespace Repository.Repositories
         {
             try
             {
-                return await this._dbContext.Users.SingleOrDefaultAsync(x => x.Email == email);
+                var user = await this._dbContext.Users.SingleOrDefaultAsync(x => x.Email.Equals(email));
+                return user;
             }
             catch (Exception ex)
             {

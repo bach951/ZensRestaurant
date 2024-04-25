@@ -78,6 +78,11 @@ namespace Service.Services.Implementations
         {
             try
             {
+                var userEmail = await _unitOfWork.UserRepository.GetAccountAsync(userRegisterRequest.Email);
+                if (userEmail != null)
+                {
+                    throw new Exception("Email already exist in the database");
+                }
                 string patternGmail = @"@gmail\.com$";
 
                 if (userRegisterRequest.UserName.Length > 100)
