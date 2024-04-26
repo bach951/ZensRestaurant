@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Repository.Models;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace Repository.DBContext
 {
@@ -20,6 +21,7 @@ namespace Repository.DBContext
 
         }
         public DbSet<User> Users { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -48,6 +50,19 @@ namespace Repository.DBContext
                 user.Property(prop => prop.Role).IsUnicode(false).HasMaxLength(20).IsRequired(true);
                 user.Property(prop => prop.Avatar).IsUnicode(false).HasMaxLength(int.MaxValue).IsRequired(false);
             });
+            #endregion
+
+            #region RefreshToken
+            modelBuilder.Entity<RefreshToken>(rft =>
+            {
+                rft.Property(prop => prop.Token).IsUnicode(false).HasMaxLength(int.MaxValue).IsRequired(true);
+                rft.Property(prop => prop.ExpiredDate).HasColumnType("datetime2").IsRequired(true);
+                rft.Property(prop => prop.JWTId).IsUnicode(false).HasMaxLength(int.MaxValue).IsRequired(true);
+            });
+
+            modelBuilder.Entity<RefreshToken>()
+             .HasOne(r => r.User)
+             .WithMany(user => user.RefreshTokens);
             #endregion
         }
     }

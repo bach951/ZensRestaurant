@@ -82,7 +82,7 @@ namespace ZensRestaurant.Controllers
         /// <response code="400">Some Error about request data and logic data.</response>
         [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
-        [HttpGet("/api/v1/user/{id}")]
+        [HttpGet("/api/v1/user/profile/{id}")]
         [PermissionAuthorize("Customer")]
         public async Task<IActionResult> GetUserInformationAsync([FromRoute] int id)
         {

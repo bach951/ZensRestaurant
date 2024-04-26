@@ -10,8 +10,9 @@ namespace Service.Services.Interfaces
 {
     public interface IAuthenticationService
     {
-        Task<AccountResponse> LoginAsync(AccountRequest accountRequest, JWTAuth jwtAuth);
-        AccountResponse GenerateToken(AccountResponse accountResponse, JWTAuth jwtAuth);
-
+        public Task<AccountResponse> LoginAsync(AccountRequest accountRequest, JWTAuth jwtAuth);
+        public Task<AccountResponse> GenerateTokensAsync(AccountResponse accountResponse, JWTAuth jwtAuth);
+        public Task<AccountTokenResponse> ReGenerateTokensAsync(AccountTokenRequest accountTokenRequest, JWTAuth jwtAuth);
+        public Task ForgetPassword(string email);
     }
 }

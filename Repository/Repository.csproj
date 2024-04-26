@@ -20,12 +20,12 @@
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
     <PackageReference Include="Newtonsoft.Json.Bson" Version="1.0.2" />
+    <PackageReference Include="NUnit" Version="4.1.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Utils\" />
-    <Folder Include="SMTPs\Models\" />
-    <Folder Include="SMTPs\Repositories\" />
   </ItemGroup>
 
 </Project>

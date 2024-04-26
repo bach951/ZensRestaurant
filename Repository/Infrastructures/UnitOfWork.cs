@@ -1,5 +1,6 @@
 ﻿using Repository.DBContext;
 using Repository.Repositories;
+using Repository.SMTPs.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,23 +13,27 @@ namespace Repository.Infrastructures
     {
         private ZRDbContext _dbContext;
         private UserRepository _userRepository;
+        private RefreshTokenRepository _refreshTokenRepository;
+        private EmailRepository _emailRepository;
+
+
 
         public UnitOfWork(ZRDbContext dbContext)
         {
-            if(this._dbContext == null)
+            if (this._dbContext == null)
             {
                 this._dbContext = dbContext;
             }
-            
+
         }
         public void Commit()
         {
-            throw new NotImplementedException();
+            this._dbContext.SaveChanges();
         }
 
-        public Task CommitAsync()
+        public async Task CommitAsync()
         {
-            throw new NotImplementedException();
+            await this._dbContext.SaveChangesAsync();
         }
 
         public UserRepository UserRepository
@@ -40,6 +45,30 @@ namespace Repository.Infrastructures
                     this._userRepository = new UserRepository(this._dbContext);
                 }
                 return this._userRepository;
+            }
+        }
+
+        public RefreshTokenRepository RefreshTokenRepository
+        {
+            get
+            {
+                if (this._refreshTokenRepository == null)
+                {
+                    this._refreshTokenRepository = new RefreshTokenRepository(this._dbContext);
+                }
+                return this._refreshTokenRepository;
+            }
+        }
+
+        public EmailRepository EmailRepository
+        {
+            get
+            {
+                if (this._emailRepository == null)
+                {
+                    this._emailRepository = new EmailRepository(this._dbContext);
+                }
+                return this._emailRepository;
             }
         }
     }

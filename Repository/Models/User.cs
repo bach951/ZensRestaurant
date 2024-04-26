@@ -21,5 +21,6 @@ namespace Repository.Models
         public string Role { get; set; }
         public DateTime DOB { get; set; }
         public string Avatar { get; set; }
+        public IEnumerable<RefreshToken> RefreshTokens { get; set; }
     }
 }

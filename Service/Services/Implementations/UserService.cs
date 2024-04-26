@@ -122,6 +122,7 @@ namespace Service.Services.Implementations
                     Status = 1
                 };
                 await _unitOfWork.UserRepository.RegisterAnAccount(user);
+                await this._unitOfWork.CommitAsync();
             }
             catch (Exception ex)
             {

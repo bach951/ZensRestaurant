@@ -48,7 +48,18 @@ namespace Repository.Repositories
             try
             {
                 await this._dbContext.Users.AddAsync(user);
-                await this._dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public void UpdateUserAccount(User user)
+        {
+            try
+            {
+                this._dbContext.Users.Update(user);
             }
             catch (Exception ex)
             {
