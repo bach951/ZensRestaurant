@@ -14,5 +14,6 @@ namespace Service.Services.Interfaces
         public Task<AccountResponse> GenerateTokensAsync(AccountResponse accountResponse, JWTAuth jwtAuth);
         public Task<AccountTokenResponse> ReGenerateTokensAsync(AccountTokenRequest accountTokenRequest, JWTAuth jwtAuth);
         public Task ForgetPassword(string email);
+        public Task ChangePassword(ChangePasswordRequest changePasswordRequest);
     }
 }

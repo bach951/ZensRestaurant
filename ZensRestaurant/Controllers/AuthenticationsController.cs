@@ -5,6 +5,7 @@ using Service.DTOs.Accounts;
 using Service.DTOs.JWTs;
 using Service.Services.Interfaces;
 using System.ComponentModel.DataAnnotations;
+using ZensRestaurant.Authorization;
 
 namespace ZensRestaurant.Controllers
 {
@@ -91,7 +92,7 @@ namespace ZensRestaurant.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { Message = ex.Message });
             }
 
         }
@@ -125,11 +126,53 @@ namespace ZensRestaurant.Controllers
             try
             {
                 await _authenticationService.ForgetPassword(forgotPasswordRequest.Email);
-                return Ok("Password already send to your email");
+                return Ok(new { Message = "Password already send to your email" });
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { Message = ex.Message });
+            }
+
+        }
+        #endregion
+
+        #region Change password API
+        /// <summary>
+        /// Change password when user forgot API
+        /// </summary>
+        /// <param name="changePasswordRequest">
+        /// email of user, old password, new password and confirm password.
+        /// </param>
+        /// <returns>
+        /// Message: Change password successfully.
+        /// </returns>
+        /// <remarks>
+        ///     Sample request:
+        ///
+        ///         POST 
+        ///         {
+        ///             "email": "lexuanbach952001@gmail.com"
+        ///             "oldPassword": "123456789"
+        ///             "newPassword": "987654321"
+        ///             "confirmPassword": "987654321"
+        ///         }
+        /// </remarks>
+        /// <response code="200"> Change password successfully</response>
+        /// <response code="400">Some Error about request data and logic data.</response>
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [HttpPut("/api/v1/auth/change-password")]
+        [PermissionAuthorize("Customer")]
+        public async Task<IActionResult> PostChangePasswordAsync([FromBody] ChangePasswordRequest changePasswordRequest)
+        {
+            try
+            {
+                await _authenticationService.ChangePassword(changePasswordRequest);
+                return Ok(new { Message = "Change password successfully" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Message = ex.Message });
             }
 
         }

@@ -240,5 +240,42 @@ namespace Service.Services.Implementations
             }
 
         }
+
+        public async Task ChangePassword(ChangePasswordRequest changePasswordRequest)
+        {
+            try
+            {
+                User user = await this._unitOfWork.UserRepository.GetAccountAsync(changePasswordRequest.Email);
+                if (user == null)
+                {
+                    throw new Exception("Email doesn't exist in the database"); ;
+                }
+
+                if (!user.Password.Equals(changePasswordRequest.OldPassword))
+                {
+                    throw new Exception("Invalid password");
+                }
+
+                if (!changePasswordRequest.NewPassword.Equals(changePasswordRequest.ComfirmPassword))
+                {
+                    throw new Exception("New password and comfirm password not match each orther"); ;
+                }
+
+                if (changePasswordRequest.NewPassword.Length <= 0)
+                {
+                    throw new Exception("Password need to greater than 1 character"); ;
+                }
+
+                string encrypPassword = StringToMD5.GetMD5Hash(changePasswordRequest.NewPassword);
+                user.Password = encrypPassword;
+                this._unitOfWork.UserRepository.UpdateUserAccount(user);
+                this._unitOfWork.Commit();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+        }
     }
 }
