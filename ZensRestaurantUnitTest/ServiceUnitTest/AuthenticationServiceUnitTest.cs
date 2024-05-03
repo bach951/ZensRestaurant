@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using Microsoft.Extensions.DependencyInjection;
+using NUnit.Framework;
 using NUnit.Framework.Legacy;
 using Repository.DBContext;
 using Repository.Infrastructures;
@@ -20,34 +21,34 @@ namespace ZensRestaurantUnitTest.ServiceUnitTest
     {
         private IAuthenticationService _authenticationService;
         private JWTAuth _jWTAuth;
-        private IUnitOfWork _unitOfWork;
-        private ZRDbContext _zRDbContext;
-        public AuthenticationServiceUnitTest()
-        {
-            // This constructor is necessary for NUnit to initialize the test fixture
-        }
-
+        private DependencyInjection dependencyInjection = new DependencyInjection();
+        private ServiceProvider _provider;
+        private IServiceScope _scope;
         [OneTimeSetUp]
-        public void Setup()
+        public void SetUp()
         {
             _jWTAuth = new JWTAuth
             {
                 Key = "ZensRestaurant2024LeXuanBach2001"
             };
-            _zRDbContext = new ZRDbContext();
-            _unitOfWork = new UnitOfWork(_zRDbContext);
-            // Initialize your authentication service here if needed
-            _authenticationService = new AuthenticationService(_unitOfWork); // Replace YourAuthenticationService with your actual implementation
+            _provider = dependencyInjection.provider;
+            _scope = _provider.CreateScope();
+            _authenticationService = _scope.ServiceProvider.GetService<IAuthenticationService>();
+        }
+        public AuthenticationServiceUnitTest()
+        {
+            // This constructor is necessary for NUnit to initialize the test fixture
         }
 
+        #region Login
         [Test]
         public async Task Login_Success_ShouldReturnAccountResponse()
         {
             // Arrange: prepare the data to test
             AccountRequest accountRequest = new AccountRequest
             {
-                Email = "lexuanbach952001@gmail.com",
-                Password = "72b0ff31df84edcbdc79ca74a8fed313"
+                Email = "ngokhong@gmail.com",
+                Password = "4297f44b13955235245b2497399d7a93"
             };
             // Act: test
             var response = await _authenticationService.LoginAsync(accountRequest, _jWTAuth);
@@ -62,7 +63,7 @@ namespace ZensRestaurantUnitTest.ServiceUnitTest
             // Arrange: prepare the data to test
             AccountRequest accountRequest = new AccountRequest
             {
-                Email = "lexuanbach952001.com",
+                Email = "ngokhong.com",
                 Password = "72b0ff31df84edcbdc79ca74a8fed313"
             };
             // Act & Assert: test
@@ -112,7 +113,7 @@ namespace ZensRestaurantUnitTest.ServiceUnitTest
             // Arrange: prepare the data to test
             AccountRequest accountRequest = new AccountRequest
             {
-                Email = "yg@gmail.com",
+                Email = "tamtang@gmail.com",
                 Password = "f5bb0c8de146c67b44babbf4e6584cc0"
             };
             // Act & Assert: test
@@ -137,7 +138,7 @@ namespace ZensRestaurantUnitTest.ServiceUnitTest
             // Arrange: prepare the data to test
             AccountRequest accountRequest = new AccountRequest
             {
-                Email = "xuanrin1412@gmail.com",
+                Email = "ngokhong@gmail.com",
                 Password = "123123123"
             };
             // Act & Assert: test
@@ -155,18 +156,17 @@ namespace ZensRestaurantUnitTest.ServiceUnitTest
             ClassicAssert.IsNotNull(exception);
             ClassicAssert.AreEqual("Password in valid", exception.Message);
         }
+        #endregion
 
+        #region Regenerate Token
         [Test]
         public async Task RegenerateToken_Success_ShouldReturnAccountTokenResponse()
         {
             // Arrange: prepare the data to test
             AccountTokenRequest accountTokenRequest = new AccountTokenRequest
             {
-                AccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiYWNobGU5NTIwMDFAZ21" +
-                "haWwuY29tIiwiZW1haWwiOiJiYWNobGU5NTIwMDFAZ21haWwuY29tIiwic2lkIjoiNiIsIlJvbGUiOiJDdXN0b2" +
-                "1lciIsImp0aSI6IjBmNzkxYjU0LWQ0MWYtNDUzYS1hMDhkLWExYTFlZjE4OWYxZiIsIm5iZiI6MTcxNDY0MTc" +
-                "4MCwiZXhwIjoxNzE0NjQxNzkwLCJpYXQiOjE3MTQ2NDE3ODB9.756bEBgcN7pdnlmB19pNqL536oQnq_vRtGAb3oHerC8",
-                RefreshToken = "hrDjuA0LbWKKGEDAadealxYWwapxcGSpgoXUlmIYuQs="
+                AccessToken = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5cBMaHqMMKJZwCpexB6jiYbHwB_tNK2n0wCOjK4CzxmtBIJ0ex0x-fdzUYB9jdMg26SQEDUPa1lSM6pPa5JVTuFG_T71rgZI2BK0hk7HmnykV7VHbu0Ow2SGNsHJnrRjQ",
+                RefreshToken = "l9uoHp6x5ePaLeFO4OitWGmnozM/rVuJA37hZ8eFp44="
             };
             // Act & Assert: test
             var response = await _authenticationService.ReGenerateTokensAsync(accountTokenRequest, _jWTAuth);
@@ -180,7 +180,12 @@ namespace ZensRestaurantUnitTest.ServiceUnitTest
             // Arrange: prepare the data to test
             AccountTokenRequest accountTokenRequest = new AccountTokenRequest
             {
-                AccessToken = "invalidAcessToken",
+                AccessToken = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9." +
+                "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwi" +
+                "aWF0IjoxNTE2MjM5MDIyfQ.ASsBwkXGQXNVlDz2kpE2_VoRpzoXsw" +
+                "MfbJ_pEf9ZoTBmykDfTPyzCxBDBxR1znMzFi4p0pep5jptF9a0rPFXtUAA" +
+                "8MtZheTI51N55_yYiFQnzAc8aXBlVMGz7G7nF5WJrzzUGSyG1dHcIuAvjC" +
+                "mLjgjP2i_-lQbCcNhu3XEPE",
                 RefreshToken = "hrDjuA0LbWKKGEDAadealxYWwapxcGSpgoXUlmIYuQs="
             };
             // Act & Assert: test
@@ -204,11 +209,14 @@ namespace ZensRestaurantUnitTest.ServiceUnitTest
             // Arrange: prepare the data to test
             AccountTokenRequest accountTokenRequest = new AccountTokenRequest
             {
-                AccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiYWNobGU5NTIwMDFAZ21" +
-                "haWwuY29tIiwiZW1haWwiOiJiYWNobGU5NTIwMDFAZ21haWwuY29tIiwic2lkIjoiNiIsIlJvbGUiOiJDdXN0b2" +
-                "1lciIsImp0aSI6IjBmNzkxYjU0LWQ0MWYtNDUzYS1hMDhkLWExYTFlZjE4OWYxZiIsIm5iZiI6MTcxNDY0MTc" +
-                "4MCwiZXhwIjoxNzE0NjQxNzkwLCJpYXQiOjE3MTQ2NDE3ODB9.756bEBgcN7pdnlmB19pNqL536oQnq_vRtGAb3oHerC8",
-                RefreshToken = "hrDjuA0LbWKKGEDAadealxYWwapxcGSpgoXUlmIYuQs="
+                AccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
+                "eyJzdWIiOiJiYXRnaW9pQGdtYWlsLmNvbSIsImVtYWlsIjoiYmF0Z" +
+                "2lvaUBnbWFpbC5jb20iLCJzaWQiOiI2IiwiUm9sZSI6IkN1c3" +
+                "RvbWVyIiwianRpIjoiZDM2MTQxNzYtNTI5Zi00ZGE3LWEzY2MtZ" +
+                "TY4YjlkMTI4OGM0IiwibmJmIjoxNzE0NzI5Nzc4LCJleHAiOjE3Mj" +
+                "MzNjk3NzgsImlhdCI6MTcxNDcyOTc3OH0.it_E_bHAhuEoTlBr7X--" +
+                "kX2Tsr1VpTjXYF4jejpkx90",
+                RefreshToken = "sylg16rhZWi9ko3fpUaSsj/Iod9HLboBiygFiLK2EIM="
             };
             // Act & Assert: test
             Exception exception = null;
@@ -231,11 +239,14 @@ namespace ZensRestaurantUnitTest.ServiceUnitTest
             // Arrange: prepare the data to test
             AccountTokenRequest accountTokenRequest = new AccountTokenRequest
             {
-                AccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiYWNobGU5NTIwMDFAZ21" +
-                "haWwuY29tIiwiZW1haWwiOiJiYWNobGU5NTIwMDFAZ21haWwuY29tIiwic2lkIjoiNiIsIlJvbGUiOiJDdXN0b2" +
-                "1lciIsImp0aSI6IjBmNzkxYjU0LWQ0MWYtNDUzYS1hMDhkLWExYTFlZjE4OWYxZiIsIm5iZiI6MTcxNDY0MTc" +
-                "4MCwiZXhwIjoxNzE0NjQxNzkwLCJpYXQiOjE3MTQ2NDE3ODB9.756bEBgcN7pdnlmB19pNqL536oQnq_vRtGAb3oHerC8",
-                RefreshToken = "hrDjuA0LbWKKGEDAadealx"
+                AccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
+                "eyJzdWIiOiJiYXRnaW9pQGdtYWlsLmNvbSIsImVtYWlsIjoiYmF0Z" +
+                "2lvaUBnbWFpbC5jb20iLCJzaWQiOiI2IiwiUm9sZSI6IkN1c3" +
+                "RvbWVyIiwianRpIjoiZDM2MTQxNzYtNTI5Zi00ZGE3LWEzY2MtZ" +
+                "TY4YjlkMTI4OGM0IiwibmJmIjoxNzE0NzI5Nzc4LCJleHAiOjE3Mj" +
+                "MzNjk3NzgsImlhdCI6MTcxNDcyOTc3OH0.it_E_bHAhuEoTlBr7X--" +
+                "kX2Tsr1VpTjXYF4jejpkx90",
+                RefreshToken = "sylg16rhZWi9ko3fpUaS"
             };
             // Act & Assert: test
             Exception exception = null;
@@ -258,11 +269,14 @@ namespace ZensRestaurantUnitTest.ServiceUnitTest
             // Arrange: prepare the data to test
             AccountTokenRequest accountTokenRequest = new()
             {
-                AccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiYWNobGU5NTIwMDFAZ21" +
-                "haWwuY29tIiwiZW1haWwiOiJiYWNobGU5NTIwMDFAZ21haWwuY29tIiwic2lkIjoiNiIsIlJvbGUiOiJDdXN0b2" +
-                "1lciIsImp0aSI6IjBmNzkxYjU0LWQ0MWYtNDUzYS1hMDhkLWExYTFlZjE4OWYxZiIsIm5iZiI6MTcxNDY0MTc" +
-                "4MCwiZXhwIjoxNzE0NjQxNzkwLCJpYXQiOjE3MTQ2NDE3ODB9.756bEBgcN7pdnlmB19pNqL536oQnq_vRtGAb3oHerC8",
-                RefreshToken = "hrDjuA0LbWKKGEDAadealx"
+                AccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9" +
+                ".eyJzdWIiOiJiYXRnaW9pQGdtYWlsLmNvbSIsImVtYWlsIjoiYmF" +
+                "0Z2lvaUBnbWFpbC5jb20iLCJzaWQiOiI2IiwiUm9sZSI6IkN1c" +
+                "3RvbWVyIiwianRpIjoiNmE1ZDdmZjEtMDExYy00ZWEzLThjNjMtZ" +
+                "DhkNTM1NWY1YjUzIiwibmJmIjoxNzE0NzMxMDc1LCJleHAiOjE3" +
+                "MTQ3MzEwODUsImlhdCI6MTcxNDczMTA3NX0.q-_o6_bojEjHwtNt-" +
+                "cKueBUQr7tE0IUttGk4yADh-4c",
+                RefreshToken = "l9uoHp6x5ePaLeFO4OitWGmnozM/rVuJA37hZ8eFp44="
             };
             // Act & Assert: test
             Exception exception = null;
@@ -276,20 +290,22 @@ namespace ZensRestaurantUnitTest.ServiceUnitTest
             }
             // Assert: check if the exception is thrown and if its message is as expected
             ClassicAssert.IsNotNull(exception);
-            ClassicAssert.AreEqual("Refresh Token doesn't exist in the database", exception.Message);
+            ClassicAssert.AreEqual("Accesstoken doesn't match", exception.Message);
         }
 
         [Test]
-        public async Task ReGenerateToken_AccessTokenExpired_ShouldReturnException()
+        public async Task ReGenerateToken_RefreshTokenExpired_ShouldReturnException()
         {
             // Arrange: prepare the data to test
             AccountTokenRequest accountTokenRequest = new()
             {
-                AccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiYWNobGU5NTIwMDFAZ21" +
-                "haWwuY29tIiwiZW1haWwiOiJiYWNobGU5NTIwMDFAZ21haWwuY29tIiwic2lkIjoiNiIsIlJvbGUiOiJDdXN0b2" +
-                "1lciIsImp0aSI6IjBmNzkxYjU0LWQ0MWYtNDUzYS1hMDhkLWExYTFlZjE4OWYxZiIsIm5iZiI6MTcxNDY0MTc" +
-                "4MCwiZXhwIjoxNzE0NjQxNzkwLCJpYXQiOjE3MTQ2NDE3ODB9.756bEBgcN7pdnlmB19pNqL536oQnq_vRtGAb3oHerC8",
-                RefreshToken = "hrDjuA0LbWKKGEDAadealx"
+                AccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e" +
+                "yJzdWIiOiJiYXRnaW9pQGdtYWlsLmNvbSIsImVtYWlsIjoiYmF0Z2l" +
+                "vaUBnbWFpbC5jb20iLCJzaWQiOiI2IiwiUm9sZSI6IkN1c3RvbWVyI" +
+                "iwianRpIjoiMzYxMDhmM2UtNzNhOC00ZDNjLWJhZDgtOThiZDdkODhh" +
+                "MzQ3IiwibmJmIjoxNzE0NzMzMTQwLCJleHAiOjE3MTQ3MzMxNTAsImlhd" +
+                "CI6MTcxNDczMzE0MH0.J3FRCKkbUjtcQR1Gdp_IU0HMBr__G8Tl-aYKYeux5mg",
+                RefreshToken = "eL4pUln+km6uLylQrVya4yYtgfDBCMwGS9pGftmxqJ0="
             };
             // Act & Assert: test
             Exception exception = null;
@@ -305,7 +321,9 @@ namespace ZensRestaurantUnitTest.ServiceUnitTest
             ClassicAssert.IsNotNull(exception);
             ClassicAssert.AreEqual("Refresh token expired", exception.Message);
         }
+        #endregion
 
+        #region Forget password
         [Test]
         public async Task ForgetPassword_Success_ShouldReturnSuccessMessage()
         {
@@ -314,7 +332,7 @@ namespace ZensRestaurantUnitTest.ServiceUnitTest
             // Act: test
             await _authenticationService.ForgetPassword(email);
             // Assert: compare the actual result and expected result
-            Assert.Pass();
+            Assert.Pass("Password already send to your email");
         }
 
         [Test]
@@ -356,7 +374,9 @@ namespace ZensRestaurantUnitTest.ServiceUnitTest
             ClassicAssert.IsNotNull(exception);
             ClassicAssert.AreEqual("Email doesn't exist in the database", exception.Message);
         }
+        #endregion
 
+        #region Change password
         [Test]
         public async Task ChangePassword_Success_ShouldReturnSuccessMessage()
         {
@@ -367,7 +387,7 @@ namespace ZensRestaurantUnitTest.ServiceUnitTest
                 Email = "lexuanbach952001@gmail.com",
                 OldPassword = "682d0d3978cd616b2f61e03333cea11a",
                 NewPassword = "bachle123",
-                ComfirmPassword = "bachle123"
+                ConfirmPassword = "bachle123"
             };
             // Act & Assert: test
             await _authenticationService.ChangePassword(changePasswordRequest);
@@ -384,7 +404,7 @@ namespace ZensRestaurantUnitTest.ServiceUnitTest
                 Email = "quanvantruong99@gmail.com",
                 OldPassword = "682d0d3978cd616b2f61e03333cea11a",
                 NewPassword = "bachle123",
-                ComfirmPassword = "bachle123"
+                ConfirmPassword = "bachle123"
             };
             // Act & Assert: test
             Exception exception = null;
@@ -410,7 +430,7 @@ namespace ZensRestaurantUnitTest.ServiceUnitTest
                 Email = "lexuanbach952001@gmail.com",
                 OldPassword = "123123123",
                 NewPassword = "bachle123",
-                ComfirmPassword = "bachle123"
+                ConfirmPassword = "bachle123"
             };
             // Act & Assert: test
             Exception exception = null;
@@ -436,7 +456,7 @@ namespace ZensRestaurantUnitTest.ServiceUnitTest
                 Email = "lexuanbach952001@gmail.com",
                 OldPassword = "682d0d3978cd616b2f61e03333cea11a",
                 NewPassword = "bachle",
-                ComfirmPassword = "bachle123"
+                ConfirmPassword = "bachle123"
             };
             // Act & Assert: test
             Exception exception = null;
@@ -462,7 +482,7 @@ namespace ZensRestaurantUnitTest.ServiceUnitTest
                 Email = "lexuanbach952001@gmail.com",
                 OldPassword = "682d0d3978cd616b2f61e03333cea11a",
                 NewPassword = "",
-                ComfirmPassword = ""
+                ConfirmPassword = ""
             };
             // Act & Assert: test
             Exception exception = null;
@@ -478,5 +498,6 @@ namespace ZensRestaurantUnitTest.ServiceUnitTest
             ClassicAssert.IsNotNull(exception);
             ClassicAssert.AreEqual("Password need to greater than 1 character", exception.Message);
         }
+        #endregion
     }
 }

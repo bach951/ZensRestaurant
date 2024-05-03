@@ -152,7 +152,7 @@ namespace ZensRestaurant.Controllers
         ///         POST 
         ///         {
         ///             "email": "lexuanbach952001@gmail.com"
-        ///             "oldPassword": "123456789"
+        ///             "oldPassword": "f5bb0c8de146c67b44babbf4e6584cc0"
         ///             "newPassword": "987654321"
         ///             "confirmPassword": "987654321"
         ///         }

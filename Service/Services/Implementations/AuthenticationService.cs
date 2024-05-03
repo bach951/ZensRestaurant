@@ -170,7 +170,7 @@ namespace Service.Services.Implementations
                 var jwtId = tokenVerification.Claims.First(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
                 if (refreshToken.JWTId.Equals(jwtId) == false)
                 {
-                    throw new Exception("accesstoken doesn't match");
+                    throw new Exception("Accesstoken doesn't match");
                 }
 
                 //Check 6: refresh token is expired
@@ -254,7 +254,7 @@ namespace Service.Services.Implementations
                     throw new Exception("Invalid password");
                 }
 
-                if (!changePasswordRequest.NewPassword.Equals(changePasswordRequest.ComfirmPassword))
+                if (!changePasswordRequest.NewPassword.Equals(changePasswordRequest.ConfirmPassword))
                 {
                     throw new Exception("New password and comfirm password not match each orther"); ;
                 }

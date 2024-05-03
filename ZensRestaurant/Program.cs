@@ -27,7 +27,6 @@ builder.Services.Configure<JWTAuth>(builder.Configuration.GetSection("JWTAuth"))
 builder.Services.AddSingleton<ZRDbContext>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddConfigSwagger();
-builder.Services.AddScoped<IValidator<UserRegisterRequest>, UserValidator>();
 //JWT
 builder.AddJwtValidation();
 // add cors
