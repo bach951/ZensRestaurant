@@ -138,7 +138,7 @@ namespace ZensRestaurant.Controllers
 
         #region Change password API
         /// <summary>
-        /// Change password when user forgot API
+        /// Change password when user forgot Password
         /// </summary>
         /// <param name="changePasswordRequest">
         /// email of user, old password, new password and confirm password.

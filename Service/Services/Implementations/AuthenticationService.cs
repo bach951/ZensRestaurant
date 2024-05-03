@@ -34,8 +34,6 @@ namespace Service.Services.Implementations
             try
             {
                 string patternGmail = @"@gmail\.com$";
-
-
                 if (!Regex.IsMatch(accountRequest.Email, patternGmail))
                 {
                     throw new Exception("Email need end with @gmail.com");
@@ -88,7 +86,7 @@ namespace Service.Services.Implementations
                         new Claim("Role", accountResponse.RoleName),
                         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                     }),
-                    Expires = DateTime.UtcNow.AddSeconds(10),
+                    Expires = DateTime.UtcNow.AddHours(1),
                     SigningCredentials = credentials
                 };
 
@@ -152,7 +150,7 @@ namespace Service.Services.Implementations
                 var expiredDate = DateUtil.ConvertUnixTimeToDateTime(utcExpiredDate);
                 if (expiredDate > DateTime.UtcNow)
                 {
-                    throw new Exception("accesstoken not expired yet");
+                    throw new Exception("Accesstoken not expired yet");
                 }
 
                 //Check 4: Check refresh token exist in Redis Db
@@ -248,7 +246,7 @@ namespace Service.Services.Implementations
                 User user = await this._unitOfWork.UserRepository.GetAccountAsync(changePasswordRequest.Email);
                 if (user == null)
                 {
-                    throw new Exception("Email doesn't exist in the database"); ;
+                    throw new Exception("Email doesn't exist in the database");
                 }
 
                 if (!user.Password.Equals(changePasswordRequest.OldPassword))
@@ -275,7 +273,6 @@ namespace Service.Services.Implementations
             {
                 throw new Exception(ex.Message);
             }
-
         }
     }
 }
