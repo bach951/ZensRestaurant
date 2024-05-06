@@ -28,10 +28,6 @@ namespace Service.Services.Implementations
             {
                 Claim registeredIdClaim = claims.FirstOrDefault(x => x.Type.Equals("sid"));
                 int idClaim = int.Parse(registeredIdClaim.Value);
-                if (idClaim != id)
-                {
-                    throw new Exception("You can't acess to orther id");
-                }
                 if (id <= 0)
                 {
                     throw new Exception("Id need to greater than 0");
@@ -41,6 +37,11 @@ namespace Service.Services.Implementations
                 {
                     throw new Exception("Id doesn't exist in the system");
                 }
+                if (idClaim != id)
+                {
+                    throw new Exception("You can't acess to orther id");
+                }
+
                 var userResponse = new UserResponse();
                 if (user.Gender == true)
                 {
